@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>后端接口测试</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <div id="welcomeMessage" style="display: none;"></div>
+
+    <section class="form-section">
+        <h2>登录</h2>
+        <form id="loginForm">
+            <label for="loginUsername">账号：</label>
+            <input type="text" id="loginUsername" name="username" required><br><br>
+            <label for="loginPassword">密码：</label>
+            <input type="password" id="loginPassword" name="password" required><br><br>
+            <button type="submit">登录</button>
+        </form>
+    </section>
+
+    <section class="form-section">
+        <h2>注册</h2>
+        <form id="registerForm">
+            <label for="registerNickname">昵称: </label>
+            <input type="text" id="registerNickname" name="nickname" required><br><br>
+            <label for="registerUsername">用户名：</label>
+            <input type="text" id="registerUsername" name="username" required><br><br>
+            <label for="registerPassword">密码：</label>
+            <input type="password" id="registerPassword" name="password" required><br><br>
+            <button type="submit">注册</button>
+        </form>
+    </section>
+
+    <script src="JavaScript/login.js"></script>
+</body>
+
+</html>
