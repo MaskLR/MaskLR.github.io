@@ -5,7 +5,7 @@ document.getElementById("loginForm").addEventListener("submit", function (event)
     console.log('Submitting login form', formData);
     
     // 发送登录请求到 login.php
-    fetch("http://mask.ddns.net:8888/api/loginUser.php", {
+    fetch("http://mask.ddns.net:808/api/loginUser.php", {
         method: "POST",
         body: formData
     })
