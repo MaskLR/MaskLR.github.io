@@ -1,22 +1,23 @@
 <?php
 function getDBConnection() {
-    $servername = "localhost:3306"; // 数据库主机名
+    $servername = "localhost"; // 数据库主机名
+    $port = "3306"; // 数据库端口
     $username = "admin"; // 数据库用户名
     $password = "root"; // 数据库密码
     $dbname = "Mask"; // 数据库名称
 
-    // 创建连接
-    $conn = new mysqli($servername, $username, $password, $dbname);
+    try {
+        // 创建 PDO 连接
+        $dsn = "mysql:host=$servername;port=$port;dbname=$dbname;charset=utf8";
+        $conn = new PDO($dsn, $username, $password);
 
-    // 检查连接
-    if ($conn->connect_error) {
-        die("连接失败 " . $conn->connect_error);
+        // 设置 PDO 错误模式为异常模式
+        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        return $conn;
+    } catch (PDOException $e) {
+        // 捕获连接错误并输出
+        die("连接失败: " . $e->getMessage());
     }
-
-
-    // 设置数据库字符集
-    mysqli_set_charset($conn, "utf8");
-
-    return $conn;
 }
 ?>

@@ -10,32 +10,49 @@
 </head>
 
 <body>
+    <header>
+        <h1>欢迎使用后端接口测试页面</h1>
+    </header>
 
-    <div id="welcomeMessage" style="display: none;"></div>
+    <main>
+        <!-- 欢迎消息 -->
+        <div id="welcomeMessage" style="display: none;" aria-live="polite"></div>
 
-    <section class="form-section">
-        <h2>登录</h2>
-        <form id="loginForm">
-            <label for="loginUsername">账号：</label>
-            <input type="text" id="loginUsername" name="username" required><br><br>
-            <label for="loginPassword">密码：</label>
-            <input type="password" id="loginPassword" name="password" required><br><br>
-            <button type="submit">登录</button>
-        </form>
-    </section>
+        <!-- 登录表单 -->
+        <section class="form-section">
+            <h2>登录</h2>
+            <form id="loginForm" aria-label="登录表单">
+                <label for="loginUsername">账号：</label>
+                <input type="text" id="loginUsername" name="username" placeholder="请输入账号" required>
+                
+                <label for="loginPassword">密码：</label>
+                <input type="password" id="loginPassword" name="password" placeholder="请输入密码" required>
+                
+                <button type="submit">登录</button>
+            </form>
+        </section>
 
-    <section class="form-section">
-        <h2>注册</h2>
-        <form id="registerForm">
-            <label for="registerNickname">昵称: </label>
-            <input type="text" id="registerNickname" name="nickname" required><br><br>
-            <label for="registerUsername">用户名：</label>
-            <input type="text" id="registerUsername" name="username" required><br><br>
-            <label for="registerPassword">密码：</label>
-            <input type="password" id="registerPassword" name="password" required><br><br>
-            <button type="submit">注册</button>
-        </form>
-    </section>
+        <!-- 注册表单 -->
+        <section class="form-section">
+            <h2>注册</h2>
+            <form id="registerForm" aria-label="注册表单">
+                <label for="registerNickname">昵称：</label>
+                <input type="text" id="registerNickname" name="nickname" placeholder="请输入昵称" required>
+                
+                <label for="registerUsername">用户名：</label>
+                <input type="text" id="registerUsername" name="username" placeholder="请输入用户名" required>
+                
+                <label for="registerPassword">密码：</label>
+                <input type="password" id="registerPassword" name="password" placeholder="请输入密码" required>
+                
+                <button type="submit">注册</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 后端接口测试页面</p>
+    </footer>
 
     <script src="JavaScript/login.js"></script>
 </body>

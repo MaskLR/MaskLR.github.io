@@ -3,73 +3,81 @@ require_once('config.php');  // 引入数据库配置
 
 // 获取用户IP地址的函数
 function getUserIP() {
-    if (isset($_SERVER['HTTP_CLIENT_IP'])) {
+    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
         return $_SERVER['HTTP_CLIENT_IP'];
-    } elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
         return $_SERVER['HTTP_X_FORWARDED_FOR'];
-    } elseif (isset($_SERVER['REMOTE_ADDR'])) {
+    } elseif (!empty($_SERVER['REMOTE_ADDR'])) {
         return $_SERVER['REMOTE_ADDR'];
-    } else {
-        return 'UNKNOWN';
     }
+    return 'UNKNOWN';
 }
 
 // 数据验证和清理
 function sanitizeInput($data) {
-    return htmlspecialchars(stripslashes(trim($data)));
+    return htmlspecialchars(trim($data));
 }
 
-// 设置时区并获取当前时间
+// 统一的 JSON 响应函数
+function jsonResponse($status, $message, $data = null, $statusCode = 200) {
+    http_response_code($statusCode);
+    echo json_encode(array('status' => $status, 'message' => $message, 'data' => $data));
+    exit;
+}
+
+// 设置时区
 date_default_timezone_set('Asia/Shanghai');  // 设置为中国标准时间
 $current_time = date('Y-m-d H:i:s');
 
-$conn = getDBConnection();  // 获取数据库连接
-$response = array("status" => "", "message" => "");
+try {
+    $conn = getDBConnection();  // 获取数据库连接
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // 获取并清理用户输入
-    $username = isset($_POST['username']) ? sanitizeInput($_POST['username']) : null;
-    $nickname = isset($_POST['nickname']) ? sanitizeInput($_POST['nickname']) : null;
-    $password = isset($_POST['password']) ? sanitizeInput($_POST['password']) : null;
-
-    if ($username && $nickname && $password) {
-        $stmt = $conn->prepare("SELECT id FROM users WHERE username = ?");
-        $stmt->bind_param("s", $username);
-        $stmt->execute();
-        $stmt->store_result();
-
-        if ($stmt->num_rows == 0) {
-            $stmt->close();
-            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-            $ip_address = getUserIP();
-
-            // 插入新用户数据，包括当前时间
-            $stmt = $conn->prepare("INSERT INTO users (username, password, nickname, ip_address, created_at) VALUES (?, ?, ?, ?, ?)");
-            $stmt->bind_param("sssss", $username, $hashed_password, $nickname, $ip_address, $current_time);
-
-            if ($stmt->execute()) {
-                $response["status"] = "success";
-                $response["message"] = "注册成功！";
-            } else {
-                $response["status"] = "error";
-                $response["message"] = "无法插入数据。";
-                error_log("Database insert error: " . $stmt->error);
-            }
-            $stmt->close();
-        } else {
-            $response["status"] = "error";
-            $response["message"] = "用户名已存在。";
-            $stmt->close();
-        }
-    } else {
-        $response["status"] = "error";
-        $response["message"] = "未提供用户名、密码或昵称。";
+    // 检查请求方法
+    if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+        jsonResponse("error", "无效的请求方法。", null, 405); // 405 Method Not Allowed
     }
-} else {
-    $response["status"] = "error";
-    $response["message"] = "无效的请求方法。";
-}
 
-$conn->close();  // 关闭数据库连接
-echo json_encode($response);  // 返回JSON格式响应
+    // 获取并清理用户输入
+    $input = json_decode(file_get_contents('php://input'), true);
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        jsonResponse("error", "无效的请求体格式。", null, 400); // 400 Bad Request
+    }
+
+    $username = isset($input['username']) ? sanitizeInput($input['username']) : null;
+    $nickname = isset($input['nickname']) ? sanitizeInput($input['nickname']) : null;
+    $password = isset($input['password']) ? sanitizeInput($input['password']) : null;
+
+    if (!$username || !$nickname || !$password) {
+        jsonResponse("error", "未提供用户名、密码或昵称。", null, 400); // 400 Bad Request
+    }
+
+    // 检查用户名是否已存在
+    $stmt = $conn->prepare("SELECT id FROM users WHERE username = :username");
+    $stmt->bindParam(':username', $username, PDO::PARAM_STR);
+    $stmt->execute();
+
+    if ($stmt->rowCount() > 0) {
+        jsonResponse("error", "用户名已存在。", null, 409); // 409 Conflict
+    }
+
+    // 插入新用户数据
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+    $ip_address = getUserIP();
+
+    $stmt = $conn->prepare("INSERT INTO users (username, password, nickname, ip_address, created_at) VALUES (:username, :password, :nickname, :ip_address, :created_at)");
+    $stmt->bindParam(':username', $username, PDO::PARAM_STR);
+    $stmt->bindParam(':password', $hashed_password, PDO::PARAM_STR);
+    $stmt->bindParam(':nickname', $nickname, PDO::PARAM_STR);
+    $stmt->bindParam(':ip_address', $ip_address, PDO::PARAM_STR);
+    $stmt->bindParam(':created_at', $current_time, PDO::PARAM_STR);
+
+    if ($stmt->execute()) {
+        jsonResponse("success", "注册成功！");
+    } else {
+        jsonResponse("error", "无法插入数据。", null, 500); // 500 Internal Server Error
+    }
+} catch (PDOException $e) {
+    error_log("Database error: " . $e->getMessage());
+    jsonResponse("error", "服务器内部错误，请稍后再试。", null, 500); // 500 Internal Server Error
+}
 ?>
