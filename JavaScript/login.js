@@ -31,7 +31,7 @@ document.getElementById("loginForm").addEventListener("submit", async function (
     const formData = new FormData(this); // 获取表单数据
 
     try {
-        const data = await handleFormSubmit("http://mask.ddns.net:808/api/loginUser.php", formData);
+        const data = await handleFormSubmit("http://mask.ddns.net:8000/api/loginUser.php", formData);
 
         if (data.success) { // 如果登录成功
             const nickname = data.nickname; // 获取昵称
@@ -51,7 +51,7 @@ document.getElementById("registerForm").addEventListener("submit", async functio
     const formData = new FormData(this); // 获取表单数据
 
     try {
-        const data = await handleFormSubmit("http://mask.ddns.net:808/api/registerUser.php", formData);
+        const data = await handleFormSubmit("http://mask.ddns.net:8000/api/registerUser.php", formData);
 
         if (data.status === "success") {
             alert("注册成功！");
