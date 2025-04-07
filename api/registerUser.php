@@ -1,5 +1,6 @@
 <?php
-require_once('config.php');  // 引入数据库配置
+require_once('config.php');
+$conn = getDBConnection();
 
 // 获取用户IP地址的函数
 function getUserIP() {
@@ -26,21 +27,17 @@ function jsonResponse($status, $message, $data = null, $statusCode = 200) {
 }
 
 // 设置时区
-date_default_timezone_set('Asia/Shanghai');  // 设置为中国标准时间
+date_default_timezone_set('Asia/Shanghai');
 $current_time = date('Y-m-d H:i:s');
 
 try {
-    $conn = getDBConnection();  // 获取数据库连接
-
-    // 检查请求方法
     if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-        jsonResponse("error", "无效的请求方法。", null, 405); // 405 Method Not Allowed
+        jsonResponse("error", "无效的请求方法。", null, 405);
     }
 
-    // 获取并清理用户输入
     $input = json_decode(file_get_contents('php://input'), true);
     if (json_last_error() !== JSON_ERROR_NONE) {
-        jsonResponse("error", "无效的请求体格式。", null, 400); // 400 Bad Request
+        jsonResponse("error", "无效的请求体格式。", null, 400);
     }
 
     $username = isset($input['username']) ? sanitizeInput($input['username']) : null;
@@ -48,19 +45,25 @@ try {
     $password = isset($input['password']) ? sanitizeInput($input['password']) : null;
 
     if (!$username || !$nickname || !$password) {
-        jsonResponse("error", "未提供用户名、密码或昵称。", null, 400); // 400 Bad Request
+        jsonResponse("error", "未提供用户名、密码或昵称。", null, 400);
     }
 
-    // 检查用户名是否已存在
+    if (strlen($username) < 3 || strlen($username) > 50) {
+        jsonResponse("error", "用户名长度必须在3到50个字符之间。", null, 400);
+    }
+
+    if (strlen($password) < 6) {
+        jsonResponse("error", "密码长度必须至少为6个字符。", null, 400);
+    }
+
     $stmt = $conn->prepare("SELECT id FROM users WHERE username = :username");
     $stmt->bindParam(':username', $username, PDO::PARAM_STR);
     $stmt->execute();
 
     if ($stmt->rowCount() > 0) {
-        jsonResponse("error", "用户名已存在。", null, 409); // 409 Conflict
+        jsonResponse("error", "用户名已存在。", null, 409);
     }
 
-    // 插入新用户数据
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
     $ip_address = getUserIP();
 
@@ -74,10 +77,13 @@ try {
     if ($stmt->execute()) {
         jsonResponse("success", "注册成功！");
     } else {
-        jsonResponse("error", "无法插入数据。", null, 500); // 500 Internal Server Error
+        jsonResponse("error", "无法插入数据。", null, 500);
     }
 } catch (PDOException $e) {
     error_log("Database error: " . $e->getMessage());
-    jsonResponse("error", "服务器内部错误，请稍后再试。", null, 500); // 500 Internal Server Error
+    jsonResponse("error", "服务器内部错误，请稍后再试。", null, 500);
+} catch (Exception $e) {
+    error_log("General error: " . $e->getMessage());
+    jsonResponse("error", "发生未知错误，请稍后再试。", null, 500);
 }
 ?>

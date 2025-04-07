@@ -5,12 +5,12 @@ async function handleFormSubmit(url, formData) {
 
         const response = await fetch(url, {
             method: "POST",
-            body: formData
+            headers: {
+                "Content-Type": "application/json" // 设置请求头为 JSON
+            },
+            body: JSON.stringify(formData) // 将数据转换为 JSON 格式
         });
 
-        console.log(`Response received from ${url}`, response);
-
-        // 检查 HTTP 状态码
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
@@ -28,10 +28,15 @@ async function handleFormSubmit(url, formData) {
 // 登录表单的提交事件
 document.getElementById("loginForm").addEventListener("submit", async function (event) {
     event.preventDefault(); // 阻止表单默认提交行为
-    const formData = new FormData(this); // 获取表单数据
+
+    // 构造 JSON 数据
+    const formData = {
+        username: document.getElementById("loginUsername").value,
+        password: document.getElementById("loginPassword").value
+    };
 
     try {
-        const data = await handleFormSubmit("http://mask.ddns.net:8000/api/loginUser.php", formData);
+        const data = await handleFormSubmit("api/loginUser.php", formData);
 
         if (data.success) { // 如果登录成功
             const nickname = data.nickname; // 获取昵称
@@ -48,10 +53,16 @@ document.getElementById("loginForm").addEventListener("submit", async function (
 // 注册表单的提交事件
 document.getElementById("registerForm").addEventListener("submit", async function (event) {
     event.preventDefault(); // 阻止表单默认提交行为
-    const formData = new FormData(this); // 获取表单数据
+
+    // 构造 JSON 数据
+    const formData = {
+        nickname: document.getElementById("registerNickname").value,
+        username: document.getElementById("registerUsername").value,
+        password: document.getElementById("registerPassword").value
+    };
 
     try {
-        const data = await handleFormSubmit("http://mask.ddns.net:8000/api/registerUser.php", formData);
+        const data = await handleFormSubmit("api/registerUser.php", formData);
 
         if (data.status === "success") {
             alert("注册成功！");

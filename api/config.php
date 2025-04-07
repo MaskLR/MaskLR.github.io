@@ -8,7 +8,7 @@ function getDBConnection() {
 
     try {
         // 创建 PDO 连接
-        $dsn = "mysql:host=$servername;port=$port;dbname=$dbname;charset=utf8";
+        $dsn = "mysql:host=$servername;port=$port;dbname=$dbname;charset=utf8mb4";
         $conn = new PDO($dsn, $username, $password);
 
         // 设置 PDO 错误模式为异常模式
@@ -16,8 +16,9 @@ function getDBConnection() {
 
         return $conn;
     } catch (PDOException $e) {
-        // 捕获连接错误并输出
-        die("连接失败: " . $e->getMessage());
+        // 捕获连接错误并记录日志
+        error_log("Database connection error: " . $e->getMessage());
+        die(json_encode(array("status" => "error", "message" => "服务器内部错误，请稍后再试。")));
     }
 }
 ?>
