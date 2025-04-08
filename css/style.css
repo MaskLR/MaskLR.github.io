@@ -6,7 +6,9 @@ body {
     padding: 0;
     line-height: 1.6; /* 增加行高，提升可读性 */
 }
-
+#center{
+    text-align: center; /* 居中对齐 */
+}
 /* 表单容器样式 */
 .form-section {
     background-color: #fff;

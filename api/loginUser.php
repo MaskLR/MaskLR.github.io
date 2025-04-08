@@ -7,6 +7,18 @@ function sanitizeInput($data) {
     return htmlspecialchars(trim($data));
 }
 
+// 获取用户 IP 地址的函数
+function getUserIP() {
+    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+        return $_SERVER['HTTP_CLIENT_IP'];
+    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        return $_SERVER['HTTP_X_FORWARDED_FOR'];
+    } elseif (!empty($_SERVER['REMOTE_ADDR'])) {
+        return $_SERVER['REMOTE_ADDR'];
+    }
+    return 'UNKNOWN';
+}
+
 // 统一的 JSON 响应函数
 function jsonResponse($success, $message, $data = null, $statusCode = 200) {
     http_response_code($statusCode);
@@ -46,6 +58,13 @@ try {
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (password_verify($password, $row['password'])) {
+            // 更新最后一次登录 IP 地址
+            $lastLoginIP = getUserIP();
+            $updateStmt = $conn->prepare("UPDATE users SET last_login_ip = :last_login_ip WHERE id = :id");
+            $updateStmt->bindParam(':last_login_ip', $lastLoginIP, PDO::PARAM_STR);
+            $updateStmt->bindParam(':id', $row['id'], PDO::PARAM_INT);
+            $updateStmt->execute();
+
             jsonResponse(true, '登录成功。', array('nickname' => $row['nickname']));
         } else {
             jsonResponse(false, '密码无效。', null, 401); // 401 Unauthorized
