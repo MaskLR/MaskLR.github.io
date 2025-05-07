@@ -3,7 +3,7 @@ function getDBConnection() {
     $servername = "localhost"; // 数据库主机名
     $port = "3306"; // 数据库端口
     $username = "admin"; // 数据库用户名
-    $password = "root"; // 数据库密码
+    $password = "admin"; // 数据库密码
     $dbname = "Mask"; // 数据库名称
 
     try {
@@ -18,7 +18,7 @@ function getDBConnection() {
     } catch (PDOException $e) {
         // 捕获连接错误并记录日志
         error_log("Database connection error: " . $e->getMessage());
-        die(json_encode(array("status" => "error", "message" => "服务器内部错误，请稍后再试。")));
+        die(json_encode(array("status" => "error", "message" => "数据库错误，请稍后再试。")));
     }
 }
 ?>
