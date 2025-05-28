@@ -32,7 +32,7 @@ document.getElementById("loginForm").addEventListener("submit", async function (
     };
 
     try {
-        const data = await handleFormSubmit("https://mask.ddns.net:808/api/loginUser.php", formData);
+        const data = await handleFormSubmit("http://mask.ddns.net:8888/api/login", formData);
 
         // 检查后端返回的数据结构
         console.log("Login response data:", data);
