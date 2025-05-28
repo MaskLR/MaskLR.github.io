@@ -32,7 +32,7 @@ document.getElementById("loginForm").addEventListener("submit", async function (
     };
 
     try {
-        const data = await handleFormSubmit("api/loginUser.php", formData);
+        const data = await handleFormSubmit("api/login", formData);
 
         // 检查后端返回的数据结构
         console.log("Login response data:", data);

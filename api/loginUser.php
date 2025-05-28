@@ -1,4 +1,15 @@
 <?php
+// 允许跨域访问
+header("Access-Control-Allow-Origin: https://masklr.github.io");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
+
+// 预检请求处理
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(204);
+    exit();
+}
+// 引入数据库连接配置
 require_once('config.php');
 $conn = getDBConnection();
 

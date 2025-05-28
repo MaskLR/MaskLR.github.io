@@ -1,6 +1,22 @@
 <?php
+// 允许跨域访问
+header("Access-Control-Allow-Origin: https://masklr.github.io");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
+
+// 预检请求处理
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(204);
+    exit();
+}
+//
 require_once('config.php');
 $conn = getDBConnection();
+
+// 数据验证和清理
+function sanitizeInput($data) {
+    return htmlspecialchars(trim($data));
+}
 
 // 获取用户IP地址的函数
 function getUserIP() {
@@ -14,10 +30,6 @@ function getUserIP() {
     return 'UNKNOWN';
 }
 
-// 数据验证和清理
-function sanitizeInput($data) {
-    return htmlspecialchars(trim($data));
-}
 
 // 统一的 JSON 响应函数
 function jsonResponse($status, $message, $data = null, $statusCode = 200) {
@@ -26,9 +38,6 @@ function jsonResponse($status, $message, $data = null, $statusCode = 200) {
     exit;
 }
 
-// 设置时区
-date_default_timezone_set('Asia/Shanghai');
-$current_time = date('Y-m-d H:i:s');
 
 try {
     if ($_SERVER["REQUEST_METHOD"] !== "POST") {
@@ -66,13 +75,13 @@ try {
 
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
     $ip_address = getUserIP();
-
-    $stmt = $conn->prepare("INSERT INTO users (username, password, nickname, ip_address, created_at) VALUES (:username, :password, :nickname, :ip_address, :created_at)");
-    $stmt->bindParam(':username', $username, PDO::PARAM_STR);
-    $stmt->bindParam(':password', $hashed_password, PDO::PARAM_STR);
-    $stmt->bindParam(':nickname', $nickname, PDO::PARAM_STR);
-    $stmt->bindParam(':ip_address', $ip_address, PDO::PARAM_STR);
-    $stmt->bindParam(':created_at', $current_time, PDO::PARAM_STR);
+	$current_time = date('Y-m-d H:i:s');  // Add this line to get the current time
+	$stmt = $conn->prepare("INSERT INTO users (username, password, nickname, ip_address, created_at) VALUES (:username, :password, :nickname, :ip_address, :created_at)");
+	$stmt->bindParam(':username', $username, PDO::PARAM_STR);
+	$stmt->bindParam(':password', $hashed_password, PDO::PARAM_STR);
+	$stmt->bindParam(':nickname', $nickname, PDO::PARAM_STR);
+	$stmt->bindParam(':ip_address', $ip_address, PDO::PARAM_STR);
+	$stmt->bindParam(':created_at', $current_time, PDO::PARAM_STR);
 
     if ($stmt->execute()) {
         jsonResponse("success", "注册成功！");
