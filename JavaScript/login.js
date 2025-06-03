@@ -1,72 +1,74 @@
-// 通用的表单提交处理函数
-async function handleFormSubmit(url, formData) {
-    try {
-        const response = await fetch(url, {
+document.addEventListener("DOMContentLoaded", () => {
+
+    const registerForm = document.getElementById("register-form");
+    const loginForm = document.getElementById("login-form");
+
+        // 登录表单提交事件
+    loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const email = document.getElementById("login-email").value;
+        const password = document.getElementById("login-password").value;
+
+        const response = await fetch("/login", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(formData)
+            body: JSON.stringify({
+                email,
+                password
+            })
         });
 
         const data = await response.json();
 
-        if (!response.ok) {
-            throw new Error(data.message || `HTTP error! Status: ${response.status}`);
-        }
+        const loginError = document.getElementById("login-error");
 
-        return data;
-    } catch (error) {
-        console.error(`Error during fetch to ${url}:`, error);
-        throw error;
-    }
-}
-
-// 登录表单提交事件
-document.getElementById("loginForm").addEventListener("submit", async function (event) {
-    event.preventDefault();
-
-    const formData = {
-        username: document.getElementById("loginUsername").value,
-        password: document.getElementById("loginPassword").value
-    };
-
-    try {
-        const data = await handleFormSubmit("http://mask.ddns.net:8888/api/login", formData);
-
-        // 检查后端返回的数据结构
-        console.log("Login response data:", data);
-
-        if (data.success) {
-            const nickname = data.data?.nickname || "用户"; // 从 data.data 中获取 nickname
-            alert(`登录成功！欢迎回来，${nickname}！`);
+        if (response.ok) {
+            loginError.textContent = "";
+            alert("登录成功!");
+            // 可以使用 token 做后续操作
+            console.log("Token:", data.token);
+            // 清空表单
+            loginForm.reset();
         } else {
-            alert(`登录失败：${data.message}`);
+            loginError.textContent = data.error || "登录失败";
         }
-    } catch (error) {
-        alert(`登录时发生错误：${error.message}`);
-    }
-});
+    });
 
-// 注册表单提交事件
-document.getElementById("registerForm").addEventListener("submit", async function (event) {
-    event.preventDefault();
+    // 注册表单提交事件
+    registerForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-    const formData = {
-        nickname: document.getElementById("registerNickname").value,
-        username: document.getElementById("registerUsername").value,
-        password: document.getElementById("registerPassword").value
-    };
+        const nickname = document.getElementById("nickname").value;
+        const email = document.getElementById("register-email").value;
+        const password = document.getElementById("register-password").value;
 
-    try {
-        const data = await handleFormSubmit("https://mask.ddns.net:808/api/registerUser.php", formData);
+        const response = await fetch("/register", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                nickname,
+                email,
+                password
+            })
+        });
 
-        if (data.status === "success") {
-            alert("注册成功！");
+        const data = await response.json();
+
+        const registerError = document.getElementById("register-error");
+
+        if (response.ok) {
+            registerError.textContent = "";
+            alert("注册成功!");
+            // 清空表单
+            registerForm.reset();
         } else {
-            alert(`注册失败：${data.message}`);
+            registerError.textContent = data.error || "注册失败";
         }
-    } catch (error) {
-        alert(`注册时发生错误：${error.message}`);
-    }
+    });
+
 });

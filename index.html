@@ -1,59 +1,47 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- 强制https -->
-    <!-- <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"> -->
-    <title>Mask LR</title>
+    <title>用户注册与登录</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
-    <header>
-        <h1 id="center">欢迎使用后端接口测试页面</h1>
-    </header>
+    <div class="container">
 
-    <main>
-        <!-- 欢迎消息 -->
-        <div id="welcomeMessage" style="display: none;" aria-live="polite"></div>
-
-        <!-- 登录表单 -->
-        <section class="form-section">
+        <div class="form-container">
             <h2>登录</h2>
-            <form id="loginForm" aria-label="登录表单">
-                <label for="loginUsername">账号：</label>
-                <input type="text" id="loginUsername" name="username" placeholder="请输入账号" required>
+            <form id="login-form">
+                <label for="login-email">邮箱</label>
+                <input type="email" id="login-email" name="email" required>
 
-                <label for="loginPassword">密码：</label>
-                <input type="password" id="loginPassword" name="password" placeholder="请输入密码" required>
+                <label for="login-password">密码</label>
+                <input type="password" id="login-password" name="password" required>
 
                 <button type="submit">登录</button>
+                <p id="login-error" class="error-message"></p>
             </form>
-        </section>
+        </div>
+    </div>
 
-        <!-- 注册表单 -->
-        <section class="form-section">
-            <h2>注册</h2>
-            <form id="registerForm" aria-label="注册表单">
-                <label for="registerNickname">昵称：</label>
-                <input type="text" id="registerNickname" name="nickname" placeholder="请输入昵称" required>
+    <div class="form-container">
+        <h2>注册</h2>
+        <form id="register-form">
+            <label for="nickname">昵称</label>
+            <input type="text" id="nickname" name="nickname" required>
 
-                <label for="registerUsername">用户名：</label>
-                <input type="text" id="registerUsername" name="username" placeholder="请输入用户名" required>
+            <label for="email">邮箱</label>
+            <input type="email" id="register-email" name="email" required>
 
-                <label for="registerPassword">密码：</label>
-                <input type="password" id="registerPassword" name="password" placeholder="请输入密码" required>
+            <label for="password">密码</label>
+            <input type="password" id="register-password" name="password" required>
 
-                <button type="submit">注册</button>
-            </form>
-        </section>
-    </main>
-
-    <footer>
-        <p id="center">&copy; 2025 后端接口测试页面</p>
-    </footer>
+            <button type="submit">注册</button>
+            <p id="register-error" class="error-message"></p>
+        </form>
+    </div>
 
     <script src="JavaScript/login.js"></script>
 </body>
