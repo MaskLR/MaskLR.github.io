@@ -1,49 +1,113 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>用户注册与登录</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>现代风格个人主页</title>
+    <style>
+        body {
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #e0e7ff 0%, #f4f4f9 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            padding: 40px 32px;
+            text-align: center;
+            max-width: 350px;
+        }
+
+        h1 {
+            margin-bottom: 12px;
+            font-size: 2.2em;
+            color: #2d2d2d;
+        }
+
+        p {
+            color: #555;
+            margin-bottom: 24px;
+        }
+
+        .info {
+            font-size: 0.98em;
+            color: #888;
+            margin-top: 18px;
+        }
+
+        .ipv6-link {
+            display: inline-block;
+            margin-top: 18px;
+            padding: 10px 24px;
+            background: #007bff;
+            color: #fff;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1em;
+            transition: background 0.2s;
+        }
+
+        .ipv6-link:hover {
+            background: #0056b3;
+        }
+
+        @media (max-width: 500px) {
+            .card {
+                padding: 24px 8px;
+                max-width: 98vw;
+            }
+        }
+    </style>
 </head>
 
 <body>
-    <div class="container">
-
-        <div class="form-container">
-            <h2>登录</h2>
-            <form id="login-form">
-                <label for="login-email">邮箱</label>
-                <input type="email" id="login-email" name="email" required>
-
-                <label for="login-password">密码</label>
-                <input type="password" id="login-password" name="password" required>
-
-                <button type="submit">登录</button>
-                <p id="login-error" class="error-message"></p>
-            </form>
-        </div>
+    <div class="card">
+        <h1>MaskLR</h1>
+        <p>这是一个现代风格的个人主页。</p>
+        <div class="info" id="ipv6-status">正在检测IPv6支持...</div>
+        <a id="ipv6-link" class="ipv6-link" href="http://mask.ddns.net:8888" target="_blank" style="display:none;">前往IPv6专属站点</a>
+        <!-- 隐藏的iframe用于检测 -->
+        <iframe id="ipv6-tester" src="" style="display:none;"></iframe>
     </div>
+    <script>
+        // 用iframe后台加载a标签指定的网址，判断是否支持IPv6
+        (function () {
+            const status = document.getElementById('ipv6-status');
+            const link = document.getElementById('ipv6-link');
+            const tester = document.getElementById('ipv6-tester');
+            let loaded = false;
+            let finished = false;
 
-    <div class="form-container">
-        <h2>注册</h2>
-        <form id="register-form">
-            <label for="nickname">昵称</label>
-            <input type="text" id="nickname" name="nickname" required>
+            // 设置iframe src为目标网址
+            tester.src = "http://mask.ddns.net:8888";
 
-            <label for="email">邮箱</label>
-            <input type="email" id="register-email" name="email" required>
+            // 如果加载成功，说明支持IPv6
+            tester.onload = function () {
+                if (finished) return;
+                loaded = true;
+                status.textContent = "检测到支持IPv6协议，您可以访问：";
+                link.style.display = "inline-block";
+            };
 
-            <label for="password">密码</label>
-            <input type="password" id="register-password" name="password" required>
-
-            <button type="submit">注册</button>
-            <p id="register-error" class="error-message"></p>
-        </form>
-    </div>
-
-    <script src="JavaScript/login.js"></script>
+            // 9秒超时后直接判定为不支持，后续不再处理onload
+            setTimeout(function () {
+                if (!loaded) {
+                    finished = true;
+                    status.textContent = "你的网络暂不支持IPv6。";
+                    link.style.display = "none";
+                }
+            }, 9000);
+        })();
+    </script>
 </body>
 
 </html>
