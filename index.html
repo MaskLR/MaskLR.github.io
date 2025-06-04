@@ -60,6 +60,17 @@
             background: #0056b3;
         }
 
+        .ipv6-check-frame {
+            width: 100%;
+            max-width: 340px;
+            height: 120px;
+            border: none;
+            margin-top: 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            background: #f8fafc;
+        }
+
         @media (max-width: 500px) {
             .card {
                 padding: 24px 8px;
@@ -71,10 +82,11 @@
 
 <body>
     <div class="card">
-        <h1>MaskLR</h1>
-        <p>这是一个现代风格的个人主页。</p>
+        <h1>欢迎来到我的主页</h1>
         <div class="info" id="ipv6-status">正在检测IPv6支持...</div>
+        <iframe class="ipv6-check-frame" src="https://6.ipw.cn/" title="IPv6检测"></iframe>
         <a id="ipv6-link" class="ipv6-link" href="http://mask.ddns.net:8888" target="_blank" style="display:none;">前往IPv6专属站点</a>
+        <iframe class="ipv6-check-frame" src="http://mask.ddns.net:8888" title="IPv6检测"></iframe>
         <!-- 隐藏的iframe用于检测 -->
         <iframe id="ipv6-tester" src="" style="display:none;"></iframe>
     </div>
@@ -88,7 +100,7 @@
             let finished = false;
 
             // 设置iframe src为目标网址
-            tester.src = "http://mask.ddns.net:8888";
+            tester.src = "https://6.ipw.cn/";
 
             // 如果加载成功，说明支持IPv6
             tester.onload = function () {
@@ -102,7 +114,7 @@
             setTimeout(function () {
                 if (!loaded) {
                     finished = true;
-                    status.textContent = "你的网络暂不支持IPv6。";
+                    status.textContent = "您的网络暂不支持IPv6。";
                     link.style.display = "none";
                 }
             }, 9000);
